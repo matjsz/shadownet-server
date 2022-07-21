@@ -2,7 +2,7 @@ const { Server } = require("socket.io")
 const axios = require('axios').default
 const chalk = require('chalk')
 const port = process.env.PORT || 3000
-const apiURL = 'https://shadownet-api.herokuapp.com/'
+const apiURL = 'https://shadownet-api.herokuapp.com'
 
 // Registering
 const io = new Server(port, {
