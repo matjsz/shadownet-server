@@ -1,0 +1,30 @@
+{
+  "name": "shadownet",
+  "version": "1.0.0",
+  "description": "welcome to the shadownet.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "matjs",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.11.0",
+    "boxen": "4.0",
+    "chalk": "2.4",
+    "express": "^4.18.1",
+    "firebase-admin": "^11.0.0",
+    "prompt-sync": "^4.2.0",
+    "readline": "^1.3.0",
+    "socket.io": "^4.5.1",
+    "socket.io-client": "^4.5.1",
+    "term": "^0.0.2",
+    "wopr": "^0.0.5",
+    "yargs": "^17.5.1"
+  },
+  "bin": {
+    "hello": "./client/client.js"
+  }
+}
