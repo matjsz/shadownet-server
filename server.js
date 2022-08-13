@@ -77,16 +77,20 @@ io.on("connection", (socket) => {
 	})
 
 	socket.on('get_all_online', (id) => {
-		axios.get(`${apiURL}/netrunners/${id}`)
+		axios.get(`${apiURL}/${id}`)
 			.then(res => {
 				if(res.data.code == 'success'){
 
-					var data = []
-					io.sockets.sockets.forEach((connectedSocket) => {
-						data.push([connectedSocket.data.username, connectedSocket.id])
-					})
+					if(res.data.data.access_level <= 0){
+						var data = []
+						io.sockets.sockets.forEach((connectedSocket) => {
+							data.push([connectedSocket.data.username, connectedSocket.id])
+						})
 
-					socket.emit('response_all_online', data)
+						socket.emit('response_all_online', data)
+					} else{
+						socket.emit('bad_response')
+					}
 				} else{
 					socket.emit('bad_response')
 				}
@@ -94,13 +98,17 @@ io.on("connection", (socket) => {
 	})
 
 	socket.on('get_netrunner', args => {
-		axios.get(`${apiURL}/netrunners/${args[0]}`)
+		axios.get(`${apiURL}/${args[0]}`)
 			.then(res => {
 				if(res.data.code == 'success'){
-					axios.get(`${apiURL}/${args[1]}`)
-					.then((data) => {
-						socket.emit('response_netrunner', data.data.data)
-					})
+					if(res.data.data.access_level <= 0){
+						axios.get(`${apiURL}/${args[1]}`)
+						.then((data) => {
+							socket.emit('response_netrunner', data.data.data)
+						})
+					} else{
+						socket.emit('bad_response')
+					}
 				} else{
 					socket.emit('bad_response')
 				}
